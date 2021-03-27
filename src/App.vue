@@ -1,5 +1,5 @@
 <template>
-  <Dashboard v-if="code" />
+  <Dashboard v-if="code" v-bind:code="code"/>
   <Login v-else />
 </template>
 
@@ -17,7 +17,7 @@ export default {
     return {
       code: new URLSearchParams(window.location.search).get("code")
     }
-  }
+  },
 }
 </script>
 
