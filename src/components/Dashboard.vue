@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import axios from 'axios'
+import axios from "axios";
 
 export default {
   name: "Dashboard",
@@ -17,18 +17,22 @@ export default {
       accessToken: "",
       refreshToken: "",
       expiresIn: "",
-      dashCode: this.code
-    }
+      dashCode: this.code,
+    };
   },
-  created(dashCode) {
-    axios.post('http://localhost:3001/login', {
-        dashCode,
-      }).then((res) => {
-        console.log(res.data)
-      }).catch(() => {
-        console.log("failed")
+  created() {
+    const code = this.$data.dashCode;
+    axios
+      .post("http://localhost:3001/login", {
+        code,
       })
-  }
+      .then((res) => {
+        console.log(res.data);
+      })
+      .catch((err) => {
+        console.log("failed", err);
+      });
+  },
 };
 </script>
 
