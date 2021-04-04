@@ -20,18 +20,24 @@ export default {
       dashCode: this.code,
     };
   },
+  methods: {
+    async login() {
+      const code = this.dashCode;
+      try {
+        const res = await axios.post("http://localhost:3001/login", {
+          code,
+        });
+        this.accessToken = res.data.accessToken;
+        this.refreshToken = res.data.refreshToken;
+        this.expiresIn = res.data.expiresIn;
+        window.history.pushState({}, null, "/");
+      } catch {
+        window.location = "/";
+      }
+    },
+  },
   created() {
-    const code = this.$data.dashCode;
-    axios
-      .post("http://localhost:3001/login", {
-        code,
-      })
-      .then((res) => {
-        console.log(res.data);
-      })
-      .catch((err) => {
-        console.log("failed", err);
-      });
+    this.login();
   },
 };
 </script>
