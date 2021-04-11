@@ -82,11 +82,7 @@ export default {
       spotifyApi.setAccessToken(this.accessToken);
     },
     updateSearchResults() {
-      console.log("hello");
       if (!this.search) return this.searchResults = [];
-      console.log("running");
-      // if (!this.accessToken) return;
-      console.log("yo");
 
       spotifyApi.searchTracks(this.search).then(res => {
         console.log("res", res);
