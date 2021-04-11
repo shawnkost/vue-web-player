@@ -6,7 +6,9 @@
       :value="search"
       @input="searchSongs"
     />
-    <div class="flex-grow-1 my-2" :style="{ overflowY: 'auto' }">Songs</div>
+    <div class="flex-grow-1 my-2" :style="{ overflowY: 'auto' }">{searchResults.map(track => {
+      <TrackSearchResult track={track} key={track.uri} />
+      })}</div>
     <div>Bottom</div>
   </div>
 </template>
@@ -14,6 +16,7 @@
 <script>
 import axios from 'axios';
 import SpotifyWebApi from 'spotify-web-api-node';
+import TrackSearchResult from '../components/TrackSearchResult'
 const spotifyApi = new SpotifyWebApi({
   clientId: '58c63d6c452940378c16d1e4a5a65ee0',
 });
@@ -22,6 +25,9 @@ export default {
   name: 'Dashboard',
   props: {
     code: String,
+  },
+  components: {
+    TrackSearchResult,
   },
   data() {
     return {
@@ -43,7 +49,7 @@ export default {
     },
     search: function() {
       this.updateSearchResults();
-    }
+    },
   },
   methods: {
     async login() {
@@ -81,13 +87,28 @@ export default {
       if (!this.accessToken) return;
       spotifyApi.setAccessToken(this.accessToken);
     },
-    updateSearchResults() {
-      if (!this.search) return this.searchResults = [];
-
+    async updateSearchResults() {
+      if (!this.search) return (this.searchResults = []);
       spotifyApi.searchTracks(this.search).then(res => {
-        console.log("res", res);
-      })
-    }
+        this.searchResults = res.body.tracks.items.map(track => {
+          const smallestAlbumImage = track.album.images.reduce(
+            (smallest, image) => {
+              if (image.height < smallest.height) return image;
+              return smallest;
+            },
+            track.album.images[0]
+          );
+          return {
+            artist: track.artists[0].name,
+            title: track.name,
+            uri: track.uri,
+            albumUrl: smallestAlbumImage.url,
+          };
+        });
+      });
+      console.log("searchResults", this.searchResults);
+      return this.searchResults;
+    },
   },
   created() {
     this.login();
